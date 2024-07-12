@@ -7,14 +7,14 @@
 # To get a newer version, you will need to update the SHA.
 # You can also reference a tag or branch, but the action may change without warning.
 
-name: Create and publish a Docker amd64 image
+name: Create and publish a Docker image
 
 on:
   push:
     branches: ['master']
   create:
 env:
-  REGISTRY: docker.io
+  REGISTRY: ghcr.io
   # IMAGE_NAME: ${{ github.repository }}
   IMAGE_NAME: andywuwu/chatgpt-on-wechat
 
