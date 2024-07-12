@@ -12,13 +12,26 @@ ENV BUILD_PREFIX=/app
 ADD . ${BUILD_PREFIX}
 
 RUN apt-get update \
-    &&apt-get install -y --no-install-recommends bash ffmpeg espeak libavcodec-extra\
+    && apt-get install -y --no-install-recommends bash ffmpeg espeak libavcodec-extra git \
     && cd ${BUILD_PREFIX} \
     && cp config-template.json config.json \
     && /usr/local/bin/python -m pip install --no-cache --upgrade pip \
     && pip install --no-cache -r requirements.txt \
     && pip install --no-cache -r requirements-optional.txt \
     && pip install azure-cognitiveservices-speech
+
+# 新增代码：克隆和安装pre_install_plugins.txt中的插件项目
+RUN mkdir -p ${BUILD_PREFIX}/plugins \
+    && cd ${BUILD_PREFIX}/plugins \
+    && while read repo; do \
+         plugin_name=$(basename ${repo} .git); \
+         git clone ${repo} ${plugin_name}; \
+         cd ${plugin_name}; \
+         if [ -f "requirements.txt" ]; then \
+           pip install --no-cache -r requirements.txt; \
+         fi; \
+         cd ..; \
+       done < ${BUILD_PREFIX}/pre_install_plugins.txt
 
 WORKDIR ${BUILD_PREFIX}
 
